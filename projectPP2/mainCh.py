@@ -10,7 +10,9 @@ class MainCh(pygame.sprite.Sprite):
         self.H = 570
         super().__init__()
         self.image = pygame.image.load('image\MainCh.png')
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
+        self.rect.center = (900, 285)
         
     def move(self):
         pressed  = pygame.key.get_pressed()
@@ -19,28 +21,30 @@ class MainCh(pygame.sprite.Sprite):
         sHeld = pressed[pygame.K_s]
         wHeld = pressed[pygame.K_w]
         
-        if aHeld and wHeld and self.rect.left>10 and self.rect.top>10:
+        if aHeld and wHeld and self.rect.left>333 and self.rect.top>130:
 #             self.image = pygame.image.load('MainChLeftUp.png')
             self.rect.move_ip(-self.playerSpeed*math.sin(math.pi/4), -self.playerSpeed*math.sin(math.pi/4))
-        elif aHeld and sHeld and self.rect.left>10 and self.rect.bottom<self.H-10:
+        elif aHeld and sHeld and self.rect.left>333 and self.rect.bottom<self.H-130:
 #             self.image = pygame.image.load('MainChLeftDown.png')
             self.rect.move_ip(-self.playerSpeed*math.sin(math.pi/4), self.playerSpeed*math.sin(math.pi/4))
-        elif dHeld and wHeld and self.rect.right<self.W-10 and self.rect.top>10:
+        elif dHeld and wHeld and self.rect.right<self.W-10 and self.rect.top>130:
 #             self.image = pygame.image.load('MainChRightUp.png')
             self.rect.move_ip(self.playerSpeed*math.sin(math.pi/4), -self.playerSpeed*math.sin(math.pi/4))
-        elif dHeld and sHeld and self.rect.right<self.W-10 and self.rect.bottom<self.H-10:
+        elif dHeld and sHeld and self.rect.right<self.W-10 and self.rect.bottom<self.H-130:
 #             self.image = pygame.image.load('MainChRightDown.png')
             self.rect.move_ip(self.playerSpeed*math.sin(math.pi/4), self.playerSpeed*math.sin(math.pi/4))
-        elif aHeld and self.rect.left>10:
-            self.image = pygame.image.load('image\MainChLeft.png')
+        elif aHeld and self.rect.left>333:
+            self.image = pygame.image.load('image\MainCh.png')
+            self.image = pygame.transform.scale(self.image, (50, 50))
             self.rect.move_ip(-self.playerSpeed, 0)
         elif dHeld and self.rect.right<self.W-10:
 #             self.image = pygame.image.load('MainChLeft.png')
             self.rect.move_ip(self.playerSpeed, 0)
-        elif wHeld and self.rect.top>10:
+        elif wHeld and self.rect.top>130:
             self.image = pygame.image.load('image\MainCh.png')
+            self.image = pygame.transform.scale(self.image, (50, 50))
             self.rect.move_ip(0, -self.playerSpeed)
-        elif sHeld and self.rect.bottom<self.H-10:
+        elif sHeld and self.rect.bottom<self.H-130:
 #             self.image = pygame.image.load('MainChLeft.png')
             self.rect.move_ip(0, self.playerSpeed)
         
