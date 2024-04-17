@@ -22,14 +22,14 @@ playerSpeed = 10
 class Goblin(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load('goblin.png')
+        self.image = pygame.image.load('image\goblin.png')
         self.rect = self.image.get_rect()
         self.rect.center = (500, 300)
              
 class MainCh(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load('MainCh.png')
+        self.image = pygame.image.load('image\MainCh.png')
         self.rect = self.image.get_rect()
         
     def move(self):
@@ -52,13 +52,13 @@ class MainCh(pygame.sprite.Sprite):
 #             self.image = pygame.image.load('MainChRightDown.png')
             self.rect.move_ip(playerSpeed*math.sin(math.pi/4), playerSpeed*math.sin(math.pi/4))
         elif aHeld and self.rect.left>10:
-            self.image = pygame.image.load('MainChLeft.png')
+            self.image = pygame.image.load('image\MainChLeft.png')
             self.rect.move_ip(-playerSpeed, 0)
         elif dHeld and self.rect.right<WIDTH-10:
 #             self.image = pygame.image.load('MainChLeft.png')
             self.rect.move_ip(playerSpeed, 0)
         elif wHeld and self.rect.top>10:
-            self.image = pygame.image.load('MainCh.png')
+            self.image = pygame.image.load('image\MainCh.png')
             self.rect.move_ip(0, -playerSpeed)
         elif sHeld and self.rect.bottom<HEIGHT-10:
 #             self.image = pygame.image.load('MainChLeft.png')
@@ -79,8 +79,9 @@ goblins.add(goblin1)
 mainCh = MainCh()
 
 fontG = pygame.font.SysFont('comicsansm', 72)
-
-money = 50
+txtWithMoney = open('money.txt', 'r')
+money = int(txtWithMoney.read())
+txtWithMoney.close()
 
 
 def mainMenu():
@@ -94,9 +95,9 @@ def mainMenu():
         menuText = fontG.render('MAIN MENU', True, 'white')
         menuRect = menuText.get_rect(center=(500, 100))
         
-        playButton = button.Button(image=pygame.image.load('playBut.png'), pos=(500, 250),
+        playButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 250),
                                    textInput='PLAY', font=fontG, baseColor='#d7fcd4', hoveringColor='White')
-        quitButton = button.Button(image=pygame.image.load('playBut.png'), pos=(500, 400),
+        quitButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 400),
                                    textInput='QUIT', font=fontG, baseColor='#d7fcd4', hoveringColor='White')
         
         screen.blit(menuText, menuRect)
@@ -108,13 +109,20 @@ def mainMenu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                txtWithMoney = open('money.txt', 'w')
+                txtWithMoney.write(str(money))
+                txtWithMoney.close()
                 pygame.quit()
                 sys.exit()
+                
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playButton.checkForInput(menuMousePos):
                     play()
                 if quitButton.checkForInput(menuMousePos):
+                    txtWithMoney = open('money.txt', 'w')
+                    txtWithMoney.write(str(money))
+                    txtWithMoney.close()
                     pygame.quit()
                     sys.exit()
                     
@@ -128,11 +136,17 @@ def play():
     while isPlaying:    
         for event in pygame.event.get():
             if event.type == QUIT:
+                txtWithMoney = open('money.txt', 'w')
+                txtWithMoney.write(str(money))
+                txtWithMoney.close()
                 pygame.quit()
                 sys.exit
             
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    txtWithMoney = open('money.txt', 'w')
+                    txtWithMoney.write(str(money))
+                    txtWithMoney.close()
                     pygame.quit()
                     sys.exit
                 if event.key == pygame.K_ESCAPE:
@@ -163,11 +177,11 @@ def pauseMenu():
         pauseText = fontG.render('PAUSE MENU', True, 'white')
         pauseRect = pauseText.get_rect(center=(500, 100))
         
-        continueButton = button.Button(image=pygame.image.load('playBut.png'), pos=(500, 250),
+        continueButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 250),
                                    textInput='PLAY', font=fontG, baseColor='#d7fcd4', hoveringColor='White')
-        mainMenuButton = button.Button(image=pygame.image.load('playBut.png'), pos=(500, 400),
+        mainMenuButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 350),
                                    textInput='MAIN MENU', font=fontG, baseColor='#d7fcd4', hoveringColor='White')
-        quitToMainMenuButton = button.Button(image=pygame.image.load('playBut.png'), pos=(500, 550),
+        quitToMainMenuButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 450),
                                    textInput='QUIT', font=fontG, baseColor='#d7fcd4', hoveringColor='White')
         
         screen.blit(pauseText, pauseRect)
@@ -181,6 +195,9 @@ def pauseMenu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                txtWithMoney = open('money.txt', 'w')
+                txtWithMoney.write(str(money))
+                txtWithMoney.close()
                 pygame.quit()
                 sys.exit()
                 
@@ -190,6 +207,9 @@ def pauseMenu():
                 if mainMenuButton.checkForInput(pauseMousePos):
                     mainMenu()
                 if quitToMainMenuButton.checkForInput(pauseMousePos):
+                    txtWithMoney = open('money.txt', 'w')
+                    txtWithMoney.write(str(money))
+                    txtWithMoney.close()
                     pygame.quit()
                     sys.exit()
             
