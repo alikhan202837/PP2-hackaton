@@ -17,7 +17,6 @@ W, H = 1000, 570
 screen = pygame.display.set_mode((W,H))
 screen.fill((255,255,255))
 pygame.display.set_caption("Game")
-game_score1 = 0
 barBg = pygame.image.load('image\\bar.png')
 playerSpeed = 10
 fontMain = pygame.font.Font('fonts\Minecraft.ttf', 50)
@@ -40,6 +39,11 @@ golbins3 = pygame.sprite.Group()
 golbins3.add(goblin3)
 mainCh = MainCh()
 
+
+game_score1 = 0
+index = -1
+indexOfRandomCard = -1
+attempts = 3
 
 
 def mainMenu():
@@ -125,6 +129,10 @@ def play():
         
         if pygame.sprite.spritecollideany(mainCh, golbins1):
             game1(screen, W, H)
+            
+        if pygame.sprite.spritecollideany(mainCh, golbins2):
+            game2(screen, W, H)
+                
                 
         pygame.display.flip()
         clock.tick(fps)
@@ -328,6 +336,120 @@ def game1(display, W, H):
         enemies.update()
 
         display.blit(screen, (0,0))
+        pygame.display.update()
+        clock.tick(fps)
+        
+def game2(display, W, H):
+    global money
+    global attempts
+    
+    screen = pygame.display.set_mode((W, H))
+    
+    # Class Card
+    class Card(pygame.sprite.Sprite):
+        def __init__(self, image, x, y):
+            pygame.sprite.Sprite.__init__(self)
+
+            self.image = image
+            self.rect = self.image.get_rect(topleft = (x,y))
+        
+    # Background
+    tableBackGround = pygame.image.load("image/3game/21table.png")
+    
+    # Cards
+    cardBackImage = pygame.image.load("image/3game/cardback.png")
+    cardBackImage = pygame.transform.scale(cardBackImage, (50, 80))
+    cardsBACK = list()
+    temp = 0
+    for i in range(8):
+        card = Card(cardBackImage, 100 + temp, H//2)
+        cardsBACK.append(card)
+        temp += 105
+
+    # Open cards - создание 
+    cardOpenImages = list()
+    for i in range(9):
+        card = pygame.image.load(f"image/3game/card{i+2}.png")
+        card = pygame.transform.scale(card, (50, 80))
+        cardOpenImages.append(card)
+    
+    # Open cards rects
+    cardsOPEN = list()
+    temp = 0
+    for i in range(8):
+        card = Card(cardOpenImages[i], 100 + temp, H//2)
+        cardsOPEN.append(card)
+        temp += 105
+    
+
+    def collisionWithCards(posMouse):
+        global index
+        for i in range(8):
+            if cardsBACK[i].rect.collidepoint(posMouse):
+                index = i
+
+    # Random Card
+    indexOfRandomCard = choice([0,1,2,3,4,5,6,7,8])
+    randomCardBack = Card(cardBackImage, W//2 - 25, 70)
+    randomCardOpen = Card(cardOpenImages[indexOfRandomCard], W//2 - 25, 70)
+    
+    
+
+    while True:
+
+        posMouse = pygame.mouse.get_pos()
+        
+        
+        attemptsText = fontMoney.render(f'Attempts: {attempts}', True, 'white')
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                collisionWithCards(posMouse)
+                print(index)
+                print(indexOfRandomCard)
+                if index!=indexOfRandomCard:
+                    attempts-=1
+                    
+        
+        # output
+        screen.blit(tableBackGround, (0,0))
+        screen.blit(randomCardBack.image, randomCardBack.rect)
+        for i in range(8):
+            screen.blit(cardsBACK[i].image, cardsBACK[i].rect)
+
+        if index != -1:
+            screen.blit(cardsOPEN[index].image, cardsOPEN[index].rect)
+            screen.blit(randomCardOpen.image, randomCardOpen.rect)
+            
+        
+        if attempts == 0: 
+            money = str(int(money)-20)
+            txtWithMoney = open('money.txt', 'w')
+            txtWithMoney.write(money)
+            txtWithMoney.close()
+            attempts = 3
+            
+            mainCh.rect.center = (900, 285)
+            print('you failed')
+            time.sleep(1)
+            play()
+        elif index == indexOfRandomCard: 
+            money = str(int(money)+20)
+            txtWithMoney = open('money.txt', 'w')
+            txtWithMoney.write(money)
+            txtWithMoney.close()
+            attempts = 3
+            
+            mainCh.rect.center = (900, 285)
+            print("congrats!!!")
+            time.sleep(1)
+            play()
+
+        display.blit(screen, (0,0))
+        
+        screen.blit(attemptsText, (10,10))
         pygame.display.update()
         clock.tick(fps)
 
