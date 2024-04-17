@@ -3,7 +3,7 @@ from pygame.locals import *
 import time
 import math
 import button
-from goblin import Goblin
+import goblin
 from mainCh import MainCh
 from random import randrange, choice
 
@@ -20,7 +20,7 @@ pygame.display.set_caption("Game")
 game_score1 = 0
 barBg = pygame.image.load('image\\bar.png')
 playerSpeed = 10
-fontMain = pygame.font.Font('fonts\Minecraft.ttf', 72)
+fontMain = pygame.font.Font('fonts\Minecraft.ttf', 50)
 fontMoney = pygame.font.Font('fonts\Minecraft.ttf', 45)
 
 txtWithMoney = open('money.txt', 'r')
@@ -29,9 +29,15 @@ txtWithMoney.close()
 moneyText = fontMoney.render(money, True, 'white')
 moneyTextRect = moneyText.get_rect()
 
-goblin1 = Goblin()
-goblins = pygame.sprite.Group()
-goblins.add(goblin1)
+goblin1 = goblin.Goblin1()
+golbins1 = pygame.sprite.Group()
+golbins1.add(goblin1)
+goblin2 = goblin.Goblin2()
+golbins2 = pygame.sprite.Group()
+golbins2.add(goblin2)
+goblin3 = goblin.Goblin3()
+golbins3 = pygame.sprite.Group()
+golbins3.add(goblin3)
 mainCh = MainCh()
 
 
@@ -84,6 +90,8 @@ def mainMenu():
 
 
 def play():
+    moneyText = fontMoney.render(money, True, 'white')
+    
     while True:
         screen.fill((255,255,255))
         screen.blit(barBg, (0,0))
@@ -112,8 +120,10 @@ def play():
         screen.blit(mainCh.image, mainCh.rect)
         mainCh.move()
         screen.blit(goblin1.image, goblin1.rect)
+        screen.blit(goblin2.image, goblin2.rect)
+        screen.blit(goblin3.image, goblin3.rect)
         
-        if pygame.sprite.spritecollideany(mainCh, goblins):
+        if pygame.sprite.spritecollideany(mainCh, golbins1):
             game1(screen, W, H)
                 
         pygame.display.flip()
@@ -174,9 +184,9 @@ def pauseMenu():
         pygame.display.flip()
         clock.tick(fps)
         
-def game1(display, W, H):
-    
-
+def game1(display, W, H):   
+    global game_score1
+    game_score1 = 0
     # initial settings
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     
@@ -226,7 +236,7 @@ def game1(display, W, H):
     enemy_image = pygame.transform.scale(enemy_image, (50,40))
     enemies = pygame.sprite.Group()
 
-    score_font = pygame.font.SysFont(None, 50)
+    score_font = pygame.font.Font('fonts\Minecraft.ttf', 50)
 
     # functions with collisions and creating and sound 
     def catch():
@@ -238,7 +248,7 @@ def game1(display, W, H):
 
     def createCoin():
         x = randrange(20, W-20)
-        speed = randrange(3,7)
+        speed = randrange(7,10)
 
         return Coin(coin_image, x, 20, speed, coins)
     
@@ -247,21 +257,26 @@ def game1(display, W, H):
         for coin in coins:
             if telega_rect.collidepoint(coin.rect.centerx, coin.rect.top):
                 catch()
-                game_score1 += 10
+                game_score1 += 1
                 coin.kill()
 
     def createEnemy():
-        x = randrange(20, W-20)
+        x = randrange(telega_rect.x-20, telega_rect.x+20)
         speed = 10
 
         return Enemy(enemy_image, x, 20, speed, enemies)
     
     def collideEnemy():
         global game_score1
+        global money 
         for enemy in enemies:
             if telega_rect.collidepoint(enemy.rect.centerx, enemy.rect.top):
                 laugh()
-                mainCh.rect.x, mainCh.rect.y = 0,0
+                money = str(int(money)-10)
+                txtWithMoney = open('money.txt', 'w')
+                txtWithMoney.write(money)
+                txtWithMoney.close()
+                mainCh.rect.center = (900, 285)
                 time.sleep(1)
                 play()
                 enemy.kill()
@@ -272,14 +287,24 @@ def game1(display, W, H):
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.USEREVENT:
-                a = choice([1,2,3,4])
-                if a in [1,3,4]:
+                a = choice([1,2,3,4,5,6,7,8,9])
+                if a in [1,3,4,5,6,7]:
                     createCoin()
-                if a == 2:
+                if a in [2,8,9]:
                     createEnemy()
             
                     
-                        
+        if game_score1>=15:
+            global money 
+            money = str(int(money)+10)
+            txtWithMoney = open('money.txt', 'w')
+            txtWithMoney.write(money)
+            txtWithMoney.close()
+            game_score = 0
+            mainCh.rect.center = (900, 285)
+            time.sleep(1)
+            play()
+            enemy.kill()
         
         # move of the telega
         pressed = pygame.key.get_pressed()
