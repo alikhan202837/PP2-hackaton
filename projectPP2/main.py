@@ -18,7 +18,7 @@ screen = pygame.display.set_mode((W,H))
 screen.fill((255,255,255))
 pygame.display.set_caption("Game")
 game_score1 = 0
-barBg = pygame.image.load('image\\barBg.png')
+barBg = pygame.image.load('image\\bar.png')
 playerSpeed = 10
 fontMain = pygame.font.Font('fonts\Minecraft.ttf', 72)
 fontMoney = pygame.font.Font('fonts\Minecraft.ttf', 45)
