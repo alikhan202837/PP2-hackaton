@@ -5,7 +5,7 @@ import math
 import button
 import goblin
 from mainCh import MainCh
-from random import randrange, choice
+from random import randrange, choice, randint, shuffle
 
 
 pygame.init()
@@ -43,7 +43,7 @@ mainCh = MainCh()
 game_score1 = 0
 index = -1
 indexOfRandomCard = -1
-attempts = 3
+attempts = 8
 
 
 def mainMenu():
@@ -340,6 +340,7 @@ def game1(display, W, H):
         clock.tick(fps)
         
 def game2(display, W, H):
+    global index
     global money
     global attempts
     
@@ -368,11 +369,32 @@ def game2(display, W, H):
 
     # Open cards - создание 
     cardOpenImages = list()
-    for i in range(9):
-        card = pygame.image.load(f"image/3game/card{i+2}.png")
+
+    indexOfRandomCard = choice([0,1,2,3,4,5,6,7])
+    cards = [i for i in range(2, 10	)]
+    shuffle(cards)
+    for i in cards:
+        card = pygame.image.load(f"image/3game/card{i}.png")
         card = pygame.transform.scale(card, (50, 80))
-        cardOpenImages.append(card)
-    
+        cardOpenImages.append(card)    
+    w = 0
+#     while len(cardOpenImages) != 8:
+#         q = randint(2,9)
+#         if w == 1 and q == indexOfRandomCard:
+#             continue
+#         if q == indexOfRandomCard and w == 0:
+#             w=1
+#         
+#         iList = list()
+#         if q not in iList:
+#             iList.append(q)
+#             card = pygame.image.load(f"image/3game/card{q}.png")
+#             card = pygame.transform.scale(card, (50, 80))
+#             cardOpenImages.append(card)
+#         else:
+#             continue
+        
+        
     # Open cards rects
     cardsOPEN = list()
     temp = 0
@@ -389,7 +411,7 @@ def game2(display, W, H):
                 index = i
 
     # Random Card
-    indexOfRandomCard = choice([0,1,2,3,4,5,6,7,8])
+    
     randomCardBack = Card(cardBackImage, W//2 - 25, 70)
     randomCardOpen = Card(cardOpenImages[indexOfRandomCard], W//2 - 25, 70)
     
@@ -429,19 +451,21 @@ def game2(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
-            attempts = 3
-            
+            attempts = 8
+            index = -1
+            indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
             print('you failed')
             time.sleep(1)
             play()
-        elif index == indexOfRandomCard: 
+        elif cardsOPEN[index].image == randomCardOpen.image: 
             money = str(int(money)+20)
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
-            attempts = 3
-            
+            attempts = 8
+            index = -1
+            indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
             print("congrats!!!")
             time.sleep(1)
