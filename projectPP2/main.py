@@ -18,15 +18,29 @@ screen = pygame.display.set_mode((W,H))
 screen.fill((255,255,255))
 pygame.display.set_caption("Game")
 barBg = pygame.image.load('image\\bar.png')
+mainMenuBg = pygame.image.load('image\\MainMenuBg.png')
+mainMenuBg = pygame.transform.scale(mainMenuBg, (1000, 570))
 playerSpeed = 10
-fontMain = pygame.font.Font('fonts\Minecraft.ttf', 50)
+fontMain = pygame.font.Font('fonts\Minecraft.ttf', 60)
 fontMoney = pygame.font.Font('fonts\Minecraft.ttf', 45)
+fontIntro = pygame.font.Font('fonts\Minecraft.ttf', 30)
 
 txtWithMoney = open('money.txt', 'r')
 money = txtWithMoney.read()
 txtWithMoney.close()
+isFirstTimeTxt = open('isFirstTime.txt', 'r')
+isFirstTime = isFirstTimeTxt.read()
+isFirstTimeTxt.close()
+introText = fontIntro.render("afssafsgsdglkfjidlvmemrdlfjelkdvdmskjgdlgdjlgkjglsidgh", True, 'white')
+
 moneyText = fontMoney.render(money, True, 'white')
 moneyTextRect = moneyText.get_rect()
+lostText = fontMain.render('You Lost', True, 'red')
+lostTextRect = lostText.get_rect()
+lostTextRect.center = (500, 285)
+wonText = fontMain.render('You Won', True, 'red')
+wonTextRect = wonText.get_rect()
+wonTextRect.center = (500, 285)
 
 goblin1 = goblin.Goblin1()
 golbins1 = pygame.sprite.Group()
@@ -46,26 +60,75 @@ indexOfRandomCard = -1
 attempts = 3
 
 
-def mainMenu():
-    pygame.display.set_caption('Main Menu')
-    
+def totalLoss():
     while True:
         screen.fill('black')
+        
+        pauseMousePos = pygame.mouse.get_pos()
+        
+        pauseText = fontMain.render('YOU LOST', True, 'white')
+        pauseRect = pauseText.get_rect(center=(500, 100))
+        
+        mainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 250),
+                                   textInput='MAIN MENU', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
+        quitToMainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 400),
+                                   textInput='QUIT', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
+        
+        screen.blit(pauseText, pauseRect)
+
+        mainMenuButton.changeColor(pauseMousePos)
+        mainMenuButton.update(screen)
+        quitToMainMenuButton.changeColor(pauseMousePos)
+        quitToMainMenuButton.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                txtWithMoney = open('money.txt', 'w')
+                txtWithMoney.write('50')
+                txtWithMoney.close()
+                pygame.quit()
+                sys.exit()
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if mainMenuButton.checkForInput(pauseMousePos):
+                    txtWithMoney = open('money.txt', 'w')
+                    txtWithMoney.write('50')
+                    txtWithMoney.close()
+                    mainMenu()
+                if quitToMainMenuButton.checkForInput(pauseMousePos):
+                    txtWithMoney = open('money.txt', 'w')
+                    txtWithMoney.write('50')
+                    txtWithMoney.close()
+                    pygame.quit()
+                    sys.exit()
+            
+                    
+        pygame.display.flip()
+        clock.tick(fps)
+
+def mainMenu():
+    pygame.display.set_caption('Main Menu')
+    global money
+    while True:
+        
+        
+        screen.fill('black')
+        screen.blit(mainMenuBg, (0,0))
         
         menuMousePos = pygame.mouse.get_pos()
         
         menuText = fontMain.render('MAIN MENU', True, 'white')
         menuRect = menuText.get_rect(center=(500, 100))
         
-        playButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 250),
+        buttonton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 250),
                                    textInput='PLAY', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
-        quitButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 400),
+        quitButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 400),
                                    textInput='QUIT', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
         
         screen.blit(menuText, menuRect)
         
-        playButton.changeColor(menuMousePos)
-        playButton.update(screen)
+        buttonton.changeColor(menuMousePos)
+        buttonton.update(screen)
         quitButton.changeColor(menuMousePos)
         quitButton.update(screen)
 
@@ -79,7 +142,7 @@ def mainMenu():
                 
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if playButton.checkForInput(menuMousePos):
+                if buttonton.checkForInput(menuMousePos):
                     play()
                 if quitButton.checkForInput(menuMousePos):
                     txtWithMoney = open('money.txt', 'w')
@@ -91,10 +154,38 @@ def mainMenu():
                     
         pygame.display.flip()
         clock.tick(fps)
+        
+def firstEnter():
+    global isFirstTime
+    global introText
+    while True:
+        if int(money)<=0:
+            totalLoss()
+        
+        screen.fill((0,0,0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        txtWithMoney = open('isFirstTime.txt', 'w')
+                        txtWithMoney.write("False")
+                        txtWithMoney.close()
+                        print('sadsa')
+                        isFirstTime = 'False'
+                        play()
+                    
+        screen.blit(introText, (0,0))
 
 
 def play():
+    global isFirstTime
     moneyText = fontMoney.render(money, True, 'white')
+    
+#     if isFirstTime == 'True':
+#         firstEnter()
     
     while True:
         screen.fill((255,255,255))
@@ -149,11 +240,11 @@ def pauseMenu():
         pauseText = fontMain.render('PAUSE MENU', True, 'white')
         pauseRect = pauseText.get_rect(center=(500, 100))
         
-        continueButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 250),
+        continueButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 250),
                                    textInput='PLAY', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
-        mainMenuButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 350),
+        mainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 350),
                                    textInput='MAIN MENU', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
-        quitToMainMenuButton = button.Button(image=pygame.image.load('image\playBut.png'), pos=(500, 450),
+        quitToMainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 450),
                                    textInput='QUIT', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
         
         screen.blit(pauseText, pauseRect)
@@ -281,11 +372,16 @@ def game1(display, W, H):
             if telega_rect.collidepoint(enemy.rect.centerx, enemy.rect.top):
                 laugh()
                 money = str(int(money)-10)
+                if int(money)<=0:
+                    totalLoss()
                 txtWithMoney = open('money.txt', 'w')
                 txtWithMoney.write(money)
                 txtWithMoney.close()
+                screen.fill((0,0,0))
+                screen.blit(lostText, lostTextRect)
                 mainCh.rect.center = (900, 285)
-                time.sleep(1)
+                pygame.display.update()
+                time.sleep(1.5)
                 play()
                 enemy.kill()
             
@@ -308,9 +404,12 @@ def game1(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
+            screen.fill((0,0,0))
+            screen.blit(wonText, wonTextRect)
+            pygame.display.update()
             game_score = 0
             mainCh.rect.center = (900, 285)
-            time.sleep(1)
+            time.sleep(1.5)
             play()
             enemy.kill()
         
@@ -455,6 +554,8 @@ def game2(display, W, H):
         
         if attempts == 0: 
             money = str(int(money)-20)
+            if int(money)<=0:
+                totalLoss()
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
@@ -462,6 +563,9 @@ def game2(display, W, H):
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
+            screen.fill((0,0,0))
+            screen.blit(lostText, lostTextRect)
+            pygame.display.update()
             print('you failed')
             time.sleep(1)
             play()
@@ -474,6 +578,9 @@ def game2(display, W, H):
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
+            screen.fill((0,0,0))
+            screen.blit(wonText, wonTextRect)
+            pygame.display.update()
             print("congrats!!!")
             time.sleep(1)
             play()

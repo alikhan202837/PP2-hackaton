@@ -1,3 +1,5 @@
+import pygame
+
 class Button():
     def __init__(self, image, pos, textInput, font, baseColor, hoveringColor):
         self.image = image
@@ -9,8 +11,9 @@ class Button():
         self.text = self.font.render(self.textInput, True, self.baseColor)
         if self.image == None:
             self.image = self.text
+        self.image = pygame.transform.scale(self.image, (400, 100))
         self.rect = self.image.get_rect(center=(self.xPos, self.yPos))
-        self.textRect = self.text.get_rect(center=(self.xPos, self.yPos))
+        self.textRect = self.text.get_rect(center=(self.xPos, self.yPos+10))
         
     def update(self, screen):
         if self.image is not None:
