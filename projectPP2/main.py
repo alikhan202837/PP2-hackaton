@@ -412,7 +412,7 @@ def game2(display, W, H):
         for i in range(8):
             if cardsBACK[i].rect.collidepoint(posMouse):
                 index = i
-
+            
     # Random Card
     
     randomCardBack = Card(cardBackImage, W//2 - 25, 70)
@@ -420,8 +420,10 @@ def game2(display, W, H):
     
     
 
-    while True:
+    prev_index = 0
 
+    while True:
+        
         posMouse = pygame.mouse.get_pos()
         
         
@@ -434,7 +436,8 @@ def game2(display, W, H):
                 collisionWithCards(posMouse)
                 print(index)
                 print(indexOfRandomCard)
-                if index!=indexOfRandomCard and index!=-1:
+                if index!=indexOfRandomCard and index!=-1 and index != prev_index:
+                    prev_index = index
                     attempts-=1
                     
         
@@ -447,6 +450,7 @@ def game2(display, W, H):
         if index != -1:
             screen.blit(cardsOPEN[index].image, cardsOPEN[index].rect)
             screen.blit(randomCardOpen.image, randomCardOpen.rect)
+        
             
         
         if attempts == 0: 
