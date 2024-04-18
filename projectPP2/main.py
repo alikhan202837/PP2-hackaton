@@ -43,7 +43,7 @@ mainCh = MainCh()
 game_score1 = 0
 index = -1
 indexOfRandomCard = -1
-attempts = 8
+attempts = 3
 
 
 def mainMenu():
@@ -341,6 +341,9 @@ def game1(display, W, H):
         
 def game2(display, W, H):
     global index
+    global indexOfRandomCard
+    index = -1
+    indexOfRandomCard = -1
     global money
     global attempts
     
@@ -431,7 +434,7 @@ def game2(display, W, H):
                 collisionWithCards(posMouse)
                 print(index)
                 print(indexOfRandomCard)
-                if index!=indexOfRandomCard:
+                if index!=indexOfRandomCard and index!=-1:
                     attempts-=1
                     
         
@@ -451,7 +454,7 @@ def game2(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
-            attempts = 8
+            attempts = 3
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
@@ -463,7 +466,7 @@ def game2(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
-            attempts = 8
+            attempts = 3
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
