@@ -373,6 +373,7 @@ def game1(display, W, H):
                 laugh()
                 money = str(int(money)-10)
                 if int(money)<=0:
+                    mainCh.rect.center = (900, 285)
                     totalLoss()
                 txtWithMoney = open('money.txt', 'w')
                 txtWithMoney.write(money)
@@ -555,6 +556,7 @@ def game2(display, W, H):
         if attempts == 0: 
             money = str(int(money)-20)
             if int(money)<=0:
+                mainCh.rect.center = (900, 285)
                 totalLoss()
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
