@@ -57,7 +57,23 @@ mainCh = MainCh()
 game_score1 = 0
 index = -1
 indexOfRandomCard = -1
-attempts = 3
+attempts2 = 3
+
+
+yourChoice = None
+goblinChoice = None
+game_score3 = 0
+goblin_score3 = 0
+attempts3 = 5
+
+fontGame3 = pygame.font.Font('fonts\Minecraft.ttf', 60)
+choose_text = fontGame3.render("Choose One of them!!!", True, "white")
+win_text = fontGame3.render("Good job!", True, "light green")
+lose_text = fontGame3.render("Loser(", True, "red")
+win_text_rect = win_text.get_rect(center = (W//2, 80))
+lose_text_rect = lose_text.get_rect(center = (W//2, 80))
+draw_text = fontGame3.render("Draw!", True, "white")
+draw_text_rect = draw_text.get_rect(center = (W//2, 80))
 
 
 def total(text):
@@ -234,6 +250,10 @@ def play():
         if pygame.sprite.spritecollideany(mainCh, golbins2):
             mainMusic.stop()
             game2(screen, W, H)
+            
+        if pygame.sprite.spritecollideany(mainCh, golbins3):
+            mainMusic.stop()
+            game3(screen, W, H)
                 
                 
         pygame.display.flip()
@@ -468,7 +488,7 @@ def game2(display, W, H):
     index = -1
     indexOfRandomCard = -1
     global money
-    global attempts
+    global attempts2
     
     screen = pygame.display.set_mode((W, H))
     
@@ -550,7 +570,7 @@ def game2(display, W, H):
         posMouse = pygame.mouse.get_pos()
         
         
-        attemptsText = fontMoney.render(f'Attempts: {attempts}', True, 'white')
+        attempts2Text = fontMoney.render(f'attempts2: {attempts2}', True, 'white')
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -561,7 +581,7 @@ def game2(display, W, H):
                 print(indexOfRandomCard)
                 if index!=indexOfRandomCard and index!=-1 and index != prev_index:
                     prev_index = index
-                    attempts-=1
+                    attempts2-=1
                     
         
         # output
@@ -576,7 +596,7 @@ def game2(display, W, H):
         
             
         
-        if attempts == 0: 
+        if attempts2 == 0: 
             money = str(int(money)-20)
             if int(money)<=0:
                 mainCh.rect.center = (900, 285)
@@ -586,7 +606,7 @@ def game2(display, W, H):
             txtWithMoney.write(money)
             txtWithMoney.close()
             game2Music.stop()
-            attempts = 3
+            attempts2 = 3
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
@@ -606,7 +626,7 @@ def game2(display, W, H):
             txtWithMoney.write(money)
             txtWithMoney.close()
             game2Music.stop()
-            attempts = 3
+            attempts2 = 3
             index = -1
             indexOfRandomCard = -1
             mainCh.rect.center = (900, 285)
@@ -619,7 +639,232 @@ def game2(display, W, H):
 
         display.blit(screen, (0,0))
         
-        screen.blit(attemptsText, (10,10))
+        screen.blit(attempts2Text, (10,10))
+        pygame.display.update()
+        clock.tick(fps)
+        
+def game3(display, W, H):
+    global yourChoice, goblinChoice, game_score3, started, goblin_score3, money
+
+    game3Music = pygame.mixer.Sound("sound/MusicSuefa.mp3")
+    game3Music.play(-1)
+
+    game_surf = pygame.Surface((W, H))
+
+    # classes
+    # 1
+    class Paper(pygame.sprite.Sprite):
+        def __init__(self, image, x, y):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = image
+            self.rect = self.image.get_rect(topleft = (x, y))
+    # 2
+    class Scissors(pygame.sprite.Sprite):
+        def __init__(self, image, x, y):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = image
+            self.rect = self.image.get_rect(topleft = (x, y))
+    # 3
+    class Rock(pygame.sprite.Sprite):
+        def __init__(self, image, x, y):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = image
+            self.rect = self.image.get_rect(topleft = (x, y))
+
+# Downloading images and setting class objects
+    # background
+    background = pygame.image.load("image/2game/stolsulifa.png")
+
+    # images of the Hero
+    paperHeroImage = pygame.image.load("image/2game/PaperHero.png")
+    scissorsHeroImage = pygame.image.load("image/2game/ScissorsHero.png")
+    fistHeroImage = pygame.image.load("image/2game/FistHero.png")
+
+    paperOutput = pygame.image.load("image/2game/paper.png")
+    scissorsOutput = pygame.image.load("image/2game/scissors.png")
+    fistOutput = pygame.image.load("image/2game/fist.png")
+
+    # images of the Enemy(Goblins)
+    paperGoblinImage = pygame.image.load("image/2game/PaperGoblin.png")
+    scissorsGoblinImage = pygame.image.load("image/2game/ScissorsGoblin.png")
+    fistGoblinImage = pygame.image.load("image/2game/FistGoblin.png")
+    
+    # images of the Goblin's choice
+    paperGoblinImage_1 = pygame.image.load("image/2game/StolSulifaPaperGoblin.png")
+    scissorsGoblinImage_1 = pygame.image.load("image/2game/StolSulifaScissorsGoblin.png")
+    fistGoblinImage_1 = pygame.image.load("image/2game/StolSulifaFistGoblin.png")
+
+    # creating rects and hands bt using classes
+        # for hero
+    paperHero = Paper(paperHeroImage, 0, 50)
+    scissorsHero = Scissors(scissorsHeroImage, 25, 230)
+    fistHero = Rock(fistHeroImage, 0, 400)
+    toolSC = pygame.Surface((165, H))
+    toolSC.fill("beige")
+
+    started = False
+# Choice of the Hero 
+    def collisionWithHands(posMouse):
+        global yourChoice, started
+        if paperHero.rect.collidepoint(posMouse):
+            yourChoice = "paper"
+        if scissorsHero.rect.collidepoint(posMouse):
+            yourChoice = "scissors"
+        if fistHero.rect.collidepoint(posMouse):
+            yourChoice = "rock"
+
+        started = True
+
+# Choice of the Goblin
+    goblinChoice = choice(["rock", "paper", "scissors"])
+
+    def updateChoice():
+        global yourChoice, goblinChoice, started
+        yourChoice = None
+        goblinChoice = choice(["rock", "paper", "scissors"])
+        started = False
+
+    def draw():
+        global game_score3, yourChoice, goblinChoice, attempts3, started, goblin_score3
+        time.sleep(0.5)
+        attempts3 -= 1
+        game_surf.blit(draw_text, draw_text_rect)
+        started = False
+
+    def win():
+        global game_score3, yourChoice, goblinChoice, attempts3, started, goblin_score3
+        time.sleep(0.5)
+        game_score3 += 1
+        attempts3 -= 1
+        game_surf.blit(win_text, win_text_rect)
+        started = False
+    def lose():
+        global game_score3, yourChoice, goblinChoice, attempts3, started, goblin_score3
+        time.sleep(0.5)
+        goblin_score3 += 1
+        attempts3 -= 1
+        game_surf.blit(lose_text, lose_text_rect)
+        started = False
+
+    while True:
+        
+        if goblin_score3 == 3:
+            goblin_score3 = 0
+            game_score3 = 0
+            money = str(int(money)-30)
+            if int(money)<=0:
+                mainCh.rect.center = (900, 285)
+                game3Music.stop()
+                totalLoss()
+                
+            txtWithMoney = open('money.txt', 'w')
+            txtWithMoney.write(money)
+            txtWithMoney.close()
+            game3Music.stop()
+            screen.fill((0,0,0))
+            screen.blit(lostText, lostTextRect)
+            mainCh.rect.center = (900, 285)
+            pygame.display.update()
+            time.sleep(1.5)
+            play()
+            
+        if game_score3 == 3:
+            goblin_score3 = 0
+            game_score3 = 0
+            money = str(int(money)+30)
+            if int(money)>=500:
+                mainCh.rect.center = (900, 285)
+                game3Music.stop()
+                totalWin()
+                
+            txtWithMoney = open('money.txt', 'w')
+            txtWithMoney.write(money)
+            txtWithMoney.close()
+            game3Music.stop()
+            screen.fill((0,0,0))
+            screen.blit(wonText, wonTextRect)
+            mainCh.rect.center = (900, 285)
+            pygame.display.update()
+            time.sleep(1.5)
+            play()
+        
+        
+        posMouse = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                time.sleep(1)
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                collisionWithHands(posMouse)
+        
+        score_font = fontGame3.render(str(game_score3), True, "green")
+        goblin_font = fontGame3.render(str(goblin_score3), True, "green")
+
+        # output
+
+        if yourChoice == None:
+            game_surf.blit(background, (0,0))
+            game_surf.blit(choose_text, (325, 250))
+
+            toolSC.blit(paperHero.image, paperHero.rect)
+            toolSC.blit(scissorsHero.image, scissorsHero.rect)
+            toolSC.blit(fistHero.image, fistHero.rect)
+            game_surf.blit(toolSC, (0,0))
+
+            game_surf.blit(score_font, (0,0))
+            game_surf.blit(goblin_font, (W-30,0))
+
+        elif yourChoice != None:
+            if started:
+                # hands of goblin
+                if goblinChoice == "rock":
+                    game_surf.blit(fistGoblinImage_1, (0,0))
+                elif goblinChoice == "paper":
+                    game_surf.blit(paperGoblinImage_1, (0,0))
+                elif goblinChoice == "scissors":
+                    game_surf.blit(scissorsGoblinImage_1, (0,0))
+                
+                # hands of hero
+                if yourChoice == "rock":
+                    game_surf.blit(fistOutput, (0, 120))
+                elif yourChoice == "scissors":
+                    game_surf.blit(scissorsOutput, (0,120))
+                elif yourChoice == "paper":
+                    game_surf.blit(paperOutput, (0,120))
+
+                game_surf.blit(score_font, (0,0))
+                game_surf.blit(goblin_font, (W-30,0))
+
+
+                # check for win or draw or lose
+                    # win
+                if yourChoice == "rock" and goblinChoice == "scissors":
+                    win()
+                elif yourChoice == "paper" and goblinChoice == "rock":
+                    win()
+                elif yourChoice == "scissors" and goblinChoice == "paper":
+                    win()
+
+                
+                    # draw
+                if yourChoice == goblinChoice:
+                    draw()
+
+                    # lose
+                if yourChoice == "scissors" and goblinChoice == "rock":
+                    lose()
+                elif yourChoice == "rock" and goblinChoice == "paper":
+                    lose()
+                elif yourChoice == "paper" and goblinChoice == "scissors":
+                    lose()
+                
+            else:
+                updateChoice()
+                time.sleep(1)
+
+            print(game_score3, goblin_score3)
+
+        display.blit(game_surf, (0,0)) 
         pygame.display.update()
         clock.tick(fps)
 
