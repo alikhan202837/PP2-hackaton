@@ -60,24 +60,20 @@ indexOfRandomCard = -1
 attempts = 3
 
 
-def totalLoss():
+def total(text):
     while True:
         screen.fill('black')
         
         pauseMousePos = pygame.mouse.get_pos()
         
-        pauseText = fontMain.render('YOU LOST', True, 'white')
+        pauseText = fontMain.render(text, True, 'white')
         pauseRect = pauseText.get_rect(center=(500, 100))
         
-        mainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 250),
-                                   textInput='MAIN MENU', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
-        quitToMainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 400),
+        quitToMainMenuButton = button.Button(image=pygame.image.load('image\\button.png'), pos=(500, 320),
                                    textInput='QUIT', font=fontMain, baseColor='#d7fcd4', hoveringColor='White')
         
         screen.blit(pauseText, pauseRect)
 
-        mainMenuButton.changeColor(pauseMousePos)
-        mainMenuButton.update(screen)
         quitToMainMenuButton.changeColor(pauseMousePos)
         quitToMainMenuButton.update(screen)
 
@@ -90,11 +86,6 @@ def totalLoss():
                 sys.exit()
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if mainMenuButton.checkForInput(pauseMousePos):
-                    txtWithMoney = open('money.txt', 'w')
-                    txtWithMoney.write('50')
-                    txtWithMoney.close()
-                    mainMenu()
                 if quitToMainMenuButton.checkForInput(pauseMousePos):
                     txtWithMoney = open('money.txt', 'w')
                     txtWithMoney.write('50')
@@ -105,6 +96,12 @@ def totalLoss():
                     
         pygame.display.flip()
         clock.tick(fps)
+
+def totalLoss():
+    total("YOU LOST, TRY AGAIN")
+
+def totalWin():
+    total("YOU COMPLETED GAME")
 
 def mainMenu():
     pygame.display.set_caption('Main Menu')
@@ -187,6 +184,9 @@ def firstEnter():
 
 
 def play():
+    txtWithMoney = open('money.txt', 'r')
+    money = txtWithMoney.read()
+    txtWithMoney.close()
     global isFirstTime
     moneyText = fontMoney.render(money, True, 'white')
     mainMusic = pygame.mixer.Sound("sound/MusicBar.mp3")
@@ -216,6 +216,7 @@ def play():
                     pygame.quit()
                     sys.exit
                 if event.key == pygame.K_ESCAPE:
+                    mainMusic.stop()
                     pauseMenu()
                     
                     
@@ -373,7 +374,7 @@ def game1(display, W, H):
 
     def createEnemy():
         x = randrange(telega_rect.x-20, telega_rect.x+20)
-        speed = 10
+        speed = 17
 
         return Enemy(enemy_image, x, 20, speed, enemies)
     
@@ -388,6 +389,7 @@ def game1(display, W, H):
                     mainCh.rect.center = (900, 285)
                     game1Music.stop()
                     totalLoss()
+                    
                 txtWithMoney = open('money.txt', 'w')
                 txtWithMoney.write(money)
                 txtWithMoney.close()
@@ -416,6 +418,10 @@ def game1(display, W, H):
         if game_score1>=15:
             global money 
             money = str(int(money)+10)
+            if int(money)>=500:
+                    mainCh.rect.center = (900, 285)
+                    game1Music.stop()
+                    totalWin()
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
@@ -574,6 +580,7 @@ def game2(display, W, H):
             money = str(int(money)-20)
             if int(money)<=0:
                 mainCh.rect.center = (900, 285)
+                game2Music.stop()
                 totalLoss()
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
@@ -591,6 +598,10 @@ def game2(display, W, H):
             play()
         elif cardsOPEN[index].image == randomCardOpen.image: 
             money = str(int(money)+20)
+            if int(money)>=500:
+                    mainCh.rect.center = (900, 285)
+                    game2Music.stop()
+                    totalWin()
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
