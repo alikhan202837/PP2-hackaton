@@ -38,7 +38,7 @@ moneyTextRect = moneyText.get_rect()
 lostText = fontMain.render('You Lost', True, 'red')
 lostTextRect = lostText.get_rect()
 lostTextRect.center = (500, 285)
-wonText = fontMain.render('You Won', True, 'red')
+wonText = fontMain.render('You Won', True, 'green')
 wonTextRect = wonText.get_rect()
 wonTextRect.center = (500, 285)
 
@@ -108,6 +108,10 @@ def totalLoss():
 
 def mainMenu():
     pygame.display.set_caption('Main Menu')
+    mainMusic = pygame.mixer.Sound("sound/MusicBar.mp3")
+    mainMusic.play(-1)
+    
+    
     global money
     while True:
         
@@ -143,8 +147,10 @@ def mainMenu():
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttonton.checkForInput(menuMousePos):
+                    mainMusic.stop()
                     play()
                 if quitButton.checkForInput(menuMousePos):
+                    mainMusic.stop()
                     txtWithMoney = open('money.txt', 'w')
                     txtWithMoney.write(money)
                     txtWithMoney.close()
@@ -183,6 +189,8 @@ def firstEnter():
 def play():
     global isFirstTime
     moneyText = fontMoney.render(money, True, 'white')
+    mainMusic = pygame.mixer.Sound("sound/MusicBar.mp3")
+    mainMusic.play(-1)
     
 #     if isFirstTime == 'True':
 #         firstEnter()
@@ -219,9 +227,11 @@ def play():
         screen.blit(goblin3.image, goblin3.rect)
         
         if pygame.sprite.spritecollideany(mainCh, golbins1):
+            mainMusic.stop()
             game1(screen, W, H)
             
         if pygame.sprite.spritecollideany(mainCh, golbins2):
+            mainMusic.stop()
             game2(screen, W, H)
                 
                 
@@ -283,7 +293,9 @@ def pauseMenu():
         pygame.display.flip()
         clock.tick(fps)
         
-def game1(display, W, H):   
+def game1(display, W, H):
+    game1Music = pygame.mixer.Sound("sound/MusicVagonetka.mp3")
+    game1Music.play(-1)
     global game_score1
     game_score1 = 0
     # initial settings
@@ -365,7 +377,7 @@ def game1(display, W, H):
 
         return Enemy(enemy_image, x, 20, speed, enemies)
     
-    def collideEnemy():
+    def collideEnemy(game1Music):
         global game_score1
         global money 
         for enemy in enemies:
@@ -374,10 +386,12 @@ def game1(display, W, H):
                 money = str(int(money)-10)
                 if int(money)<=0:
                     mainCh.rect.center = (900, 285)
+                    game1Music.stop()
                     totalLoss()
                 txtWithMoney = open('money.txt', 'w')
                 txtWithMoney.write(money)
                 txtWithMoney.close()
+                game1Music.stop()
                 screen.fill((0,0,0))
                 screen.blit(lostText, lostTextRect)
                 mainCh.rect.center = (900, 285)
@@ -405,6 +419,7 @@ def game1(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
+            game1Music.stop()
             screen.fill((0,0,0))
             screen.blit(wonText, wonTextRect)
             pygame.display.update()
@@ -422,7 +437,7 @@ def game1(display, W, H):
             telega_rect.centerx += telega_speed
     
         collideCoin()
-        collideEnemy()
+        collideEnemy(game1Music)
 
         # output
         screen.blit(background, (0,0))
@@ -440,6 +455,8 @@ def game1(display, W, H):
         clock.tick(fps)
         
 def game2(display, W, H):
+    game2Music = pygame.mixer.Sound('sound\MusicCards.mp3')
+    game2Music.play(-1)
     global index
     global indexOfRandomCard
     index = -1
@@ -561,6 +578,7 @@ def game2(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
+            game2Music.stop()
             attempts = 3
             index = -1
             indexOfRandomCard = -1
@@ -576,6 +594,7 @@ def game2(display, W, H):
             txtWithMoney = open('money.txt', 'w')
             txtWithMoney.write(money)
             txtWithMoney.close()
+            game2Music.stop()
             attempts = 3
             index = -1
             indexOfRandomCard = -1
